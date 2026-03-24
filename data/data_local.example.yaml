@@ -1,0 +1,8 @@
+# Example local dataset config (do not commit your real local paths).
+path: /absolute/path/to/your/dataset
+train: images/train
+val: images/val
+test: images/test
+
+nc: 3
+names: [more-than-two, person, scooter]

@@ -1,0 +1,13 @@
+# Example dataset config for YOLOv8.
+# Set "path" to the dataset root folder that contains images/labels.
+path: data/dataset
+train: images/train
+val: images/val
+test: images/test
+
+nc: 3
+names: [more-than-two, person, scooter]
+
+# If you extend to helmet detection, update to:
+# nc: 5
+# names: [more-than-two, person, scooter, helmet, no-helmet]
