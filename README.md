@@ -62,5 +62,3 @@ python scripts/export_rpi.py --weights runs/detect/train/weights/best.pt --forma
 - 데모 영상 및 스크린샷
 - 라벨링 가이드 / 데이터 수집 정책
 
----
-필요하면 결과 표/데모/실험 로그까지 붙여서 포트폴리오용 리포지토리로 완성해줄게요.
