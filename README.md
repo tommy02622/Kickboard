@@ -1,64 +1,41 @@
-# Kickboard Safety Detection (YOLOv8)
+# Kickboard Safety Detection
 
-전동킥보드 안전 위반(헬멧 미착용, 2인 이상 탑승)을 자동 탐지하기 위한 프로젝트입니다.  
-직접 수집한 이미지 + 인터넷 공개 데이터로 학습 데이터를 구축하고, YOLOv8을 학습한 뒤 라즈베리파이 온디바이스 환경에 배포하는 흐름을 정리했습니다.
+전동킥보드의 헬멧 미착용과 2인 이상 탑승을 탐지하기 위해 데이터를 수집·라벨링하고 YOLOv8 객체 탐지 모델을 학습한 프로젝트입니다.
 
-## Highlights
-- YOLOv8 기반 객체 탐지 모델 학습
-- 안전 위반 시나리오(헬멧 미착용 / 2인 이상 탑승) 탐지
-- ONNX/TFLite 변환 후 라즈베리파이 실행
+## 담당 작업
 
-## 폴더 구조
-```
-Kickboard/
-  data/                # 데이터 설정 및 가이드
-  notebooks/           # 학습 노트북
-  scripts/             # 학습/추론/변환 스크립트
-  deploy/              # 라즈베리파이 배포 가이드
-  results/             # 학습 결과 저장 위치
-```
+팀원 1명과 함께 킥보드 이미지를 수집하고, 수천 장 규모의 라벨링을 수행했습니다. 정리한 데이터셋으로 YOLO 모델을 학습했습니다. 라즈베리파이 애플리케이션 구현이나 실제 장치 배포는 제 담당 결과에 포함하지 않습니다.
 
-## 빠른 시작
-1) 의존성 설치
-```
+## 실험 자료 구분
+
+저장소에는 서로 다른 시기의 자료가 있습니다.
+
+| 자료 | 범위 |
+| --- | --- |
+| [`data/data.yaml`](data/data.yaml), [`notebooks/kickboard.ipynb`](notebooks/kickboard.ipynb) | 복원된 초기 3클래스 실험: `more-than-two`, `person`, `scooter` |
+| [`results/`](results/) | 포트폴리오에 사용한 후속 5클래스 실험의 보존된 시각화: `No_Helmet`, `helmet`, `more_than_two`, `one_person`, `other` |
+
+포트폴리오의 5클래스 검증 지표를 초기 3클래스 설정으로 재현할 수는 없습니다. 후속 실험의 원본 데이터셋, 학습 로그 및 가중치는 현재 이 저장소에 없으며, 아래 그림은 보존된 결과 자료입니다.
+
+![5클래스 정규화 혼동행렬](results/kickboard-confusion.png)
+
+![YOLOv8m 50 epoch 학습 곡선](results/kickboard-training.png)
+
+## 저장소 구성
+
+- [`notebooks/`](notebooks/): 복원된 학습 노트북
+- [`scripts/train.py`](scripts/train.py): YOLO 학습 실행 예시
+- [`scripts/predict.py`](scripts/predict.py): 로컬 추론 예시
+- [`data/`](data/): 초기 3클래스 데이터 설정 예시
+- [`deploy/raspberry_pi.md`](deploy/raspberry_pi.md): 라즈베리파이 배포를 위한 참고 가이드
+
+`scripts/export_rpi.py`는 ONNX/TFLite 변환 예시입니다. 변환 스크립트와 배포 가이드가 있다는 사실을 실제 라즈베리파이 실행 완료로 해석해서는 안 됩니다.
+
+## 초기 실험 실행 예시
+
+```bash
 pip install -r requirements.txt
-```
-
-2) 데이터 경로 설정  
-`data/data.yaml`의 `path`를 데이터셋 루트 경로로 수정합니다.
-
-3) 학습
-```
 python scripts/train.py --data data/data.yaml --model yolov8n.pt --epochs 50 --imgsz 640
 ```
 
-4) 추론
-```
-python scripts/predict.py --weights runs/detect/train/weights/best.pt --source path/to/images_or_video
-```
-
-5) 온디바이스 변환
-```
-python scripts/export_rpi.py --weights runs/detect/train/weights/best.pt --format onnx
-```
-
-## 데이터셋
-`data/data.yaml`은 예시 템플릿입니다.
-- 기본 클래스: `more-than-two`, `person`, `scooter`
-- 헬멧 탐지를 추가하려면 `helmet`, `no-helmet` 클래스를 추가하세요.
-
-로컬 경로 예시는 `data/data_local.example.yaml`에 있습니다.  
-실제 경로 파일은 `data/data_local.yaml`로 두고 깃에는 올리지 않도록 `.gitignore`에 포함되어 있습니다.
-
-## 온디바이스 배포
-라즈베리파이 배포 흐름은 `deploy/raspberry_pi.md`에 정리되어 있습니다.
-
-## 복원된 자료
-기존 노트북과 yaml은 `notebooks/`와 `data/`에 포함되어 있습니다.
-- `notebooks/kickboard.ipynb` (Roboflow API 키는 placeholder로 대체됨)
-
-## 앞으로 추가하면 좋은 것들
-- 성능 요약표(mAP/Precision/Recall)
-- 데모 영상 및 스크린샷
-- 라벨링 가이드 / 데이터 수집 정책
-
+`data/data.yaml`의 데이터 경로를 실제 로컬 데이터셋 위치에 맞게 수정해야 합니다. 공개 저장소에는 원본 이미지 데이터셋이 포함되어 있지 않습니다.

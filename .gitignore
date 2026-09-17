@@ -1,0 +1,6 @@
+data/data_local.yaml
+runs/
+*.pt
+*.onnx
+*.tflite
+.env
